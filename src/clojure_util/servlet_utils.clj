@@ -48,10 +48,10 @@
       (FileInputStream. resource-file))))
 
 (defn
-  find-resource [servlet-context-or-map relative-path]
+  find-resource [servlet-context relative-path]
   (if-let [body (loading-utils/find-resource relative-path)]
     body
-    (if-let [servlet-context (servlet-context servlet-context-or-map)]
+    (if servlet-context
       (find-servlet-resource servlet-context relative-path)
       (when-let [resource-file (File. (file-utils/user-directory) relative-path)]
         (when (.exists resource-file)

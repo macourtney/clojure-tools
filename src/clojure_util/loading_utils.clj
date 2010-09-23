@@ -8,7 +8,6 @@
             [clojure.contrib.seq-utils :as seq-utils]
             [clojure.contrib.str-utils :as clojure-str-utils]
             [clojure.contrib.java-utils :as java-utils]
-            [clojure.set :as clj-set]
             [clojure_util.file-utils :as file-utils]
             [clojure_util.string-utils :as string-utils]))
 
