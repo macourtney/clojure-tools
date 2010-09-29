@@ -11,7 +11,7 @@
   (let [user-dir (user-directory)]
     (is (not (nil? user-dir)))
     (is (instance? File user-dir))
-    (is (= (.getName user-dir) "clojure-util"))))
+    (is (= (.getName user-dir) "clojure-tools"))))
         
 (deftest test-find-file
   (let [parent-dir (File. (user-directory) test-directory)
