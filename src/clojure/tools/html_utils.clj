@@ -1,11 +1,11 @@
-(ns clojure_util.html-utils
+(ns clojure.tools.html-utils
   (:import [java.net URLEncoder URLDecoder]
            [java.text SimpleDateFormat]
            [java.util Calendar TimeZone]
            [org.apache.commons.lang StringEscapeUtils])
   (:require [clojure.contrib.str-utils :as str-utils]
             [clojure.contrib.logging :as logging]
-            [clojure_util.string-utils :as conjure-str-utils]))
+            [clojure.tools.string-utils :as conjure-str-utils]))
 
 (defn
 #^{:doc "Url encodes the given string."}

@@ -1,6 +1,6 @@
-(ns clojure_util.test.string-utils
+(ns clojure.tools.test.string-utils
   (:use clojure.test
-        clojure_util.string-utils))
+        clojure.tools.string-utils))
 
 (deftest test-prefill
   (is (= (prefill "Blah" 4 "!") "Blah"))

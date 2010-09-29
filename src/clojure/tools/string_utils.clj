@@ -1,4 +1,4 @@
-(ns clojure_util.string-utils
+(ns clojure.tools.string-utils
   (:import [java.security NoSuchAlgorithmException MessageDigest]
            [java.math BigInteger]
            [java.util StringTokenizer])

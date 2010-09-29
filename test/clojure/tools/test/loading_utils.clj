@@ -1,13 +1,13 @@
-(ns clojure_util.test.loading-utils
+(ns clojure.tools.test.loading-utils
   (:import [java.io ByteArrayInputStream File Reader]
            [java.util.zip ZipEntry])
   (:use clojure.test
-        clojure_util.loading-utils)
+        clojure.tools.loading-utils)
   (:require [clojure.contrib.classpath :as classpath]
             [clojure.contrib.logging :as logging]
             [clojure.contrib.ns-utils :as ns-utils]
             [clojure.contrib.seq-utils :as seq-utils]
-            [clojure_util.file-utils :as file-utils]
+            [clojure.tools.file-utils :as file-utils]
             [controllers.home-controller :as home-controller]))
         
 (deftest test-system-class-loader

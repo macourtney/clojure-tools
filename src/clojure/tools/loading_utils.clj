@@ -1,4 +1,4 @@
-(ns clojure_util.loading-utils
+(ns clojure.tools.loading-utils
   (:import [java.io File FileInputStream FileNotFoundException]
            [java.security AccessControlException]
            [java.util.jar JarFile])
@@ -8,8 +8,8 @@
             [clojure.contrib.seq-utils :as seq-utils]
             [clojure.contrib.str-utils :as clojure-str-utils]
             [clojure.contrib.java-utils :as java-utils]
-            [clojure_util.file-utils :as file-utils]
-            [clojure_util.string-utils :as string-utils]))
+            [clojure.tools.file-utils :as file-utils]
+            [clojure.tools.string-utils :as string-utils]))
 
 (defn
 #^{ :doc "Gets the system class loader" }

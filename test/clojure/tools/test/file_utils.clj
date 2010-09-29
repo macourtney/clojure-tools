@@ -1,9 +1,12 @@
-(ns clojure_util.test.file-utils
+(ns clojure.tools.test.file-utils
   (:import [java.io File FileReader])
   (:use clojure.test
-        clojure_util.file-utils)
+        clojure.tools.file-utils)
   (:require [clojure.contrib.logging :as logging]))
-        
+
+(def test-directory "test/clojure/tools/test")
+(def test-file (str test-directory "/test.txt"))
+
 (deftest test-user-directory
   (let [user-dir (user-directory)]
     (is (not (nil? user-dir)))
@@ -11,7 +14,7 @@
     (is (= (.getName user-dir) "clojure-util"))))
         
 (deftest test-find-file
-  (let [parent-dir (File. (user-directory) "test/clojure_util/test")
+  (let [parent-dir (File. (user-directory) test-directory)
         test-file-name "file_utils.clj"]
     (let [test-file-utils-file (find-file parent-dir test-file-name)]
       (is test-file-utils-file)
@@ -37,7 +40,7 @@
     
 (deftest test-write-file-content
   (let [test-content "Test content."
-        test-file (new File (user-directory) "test/clojure_util/test.txt")]
+        test-file (new File (user-directory) test-file)]
     (write-file-content test-file test-content)
     (let [test-file-reader (new FileReader test-file)
           test-file-content (make-array (. Character TYPE) 20)

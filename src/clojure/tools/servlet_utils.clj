@@ -1,9 +1,9 @@
-(ns clojure_util.servlet-utils
+(ns clojure.tools.servlet-utils
   (:import [java.io File FileInputStream])
   (:require [clojure.contrib.logging :as logging] 
             [conjure.core.server.request :as request]
-            [clojure_util.file-utils :as file-utils]
-            [clojure_util.loading-utils :as loading-utils]))
+            [clojure.tools.file-utils :as file-utils]
+            [clojure.tools.loading-utils :as loading-utils]))
 
 (defn
   servlet-uri-path [servlet-context]

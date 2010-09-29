@@ -1,4 +1,4 @@
-(ns clojure_util.file-utils
+(ns clojure.tools.file-utils
   (:import [java.io File FileWriter]
            [java.security AccessControlException])
   (:require [clojure.contrib.logging :as logging]))

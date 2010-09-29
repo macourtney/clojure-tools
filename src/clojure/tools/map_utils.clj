@@ -1,4 +1,4 @@
-(ns clojure_util.map-utils
+(ns clojure.tools.map-utils
   (:require [clojure.contrib.logging :as logging]))
 
 (defn

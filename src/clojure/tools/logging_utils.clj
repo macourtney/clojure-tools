@@ -1,4 +1,4 @@
-(ns clojure_util.logging-utils
+(ns clojure.tools.logging-utils
   (import [java.util Properties]
           [java.io ByteArrayOutputStream ByteArrayInputStream]
           [java.util.logging LogManager]))

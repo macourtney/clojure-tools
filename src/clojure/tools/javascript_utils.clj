@@ -1,4 +1,4 @@
-(ns clojure_util.javascript-utils
+(ns clojure.tools.javascript-utils
   (require [clojure.contrib.str-utils :as str-utils]))
 
 (defn

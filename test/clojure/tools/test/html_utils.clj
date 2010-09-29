@@ -1,7 +1,7 @@
-(ns clojure_util.test.html-utils
+(ns clojure.tools.test.html-utils
   (:import [java.util Calendar])
   (:use clojure.test
-        clojure_util.html-utils))
+        clojure.tools.html-utils))
 
 (deftest test-url-encode
   (is (= "foo+bar" (url-encode "foo bar"))))
