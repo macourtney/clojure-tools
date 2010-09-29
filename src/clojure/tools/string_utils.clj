@@ -2,7 +2,8 @@
   (:import [java.security NoSuchAlgorithmException MessageDigest]
            [java.math BigInteger]
            [java.util StringTokenizer])
-  (:require [clojure.contrib.str-utils :as str-utils]))
+  (:require [clojure.contrib.str-utils :as str-utils]
+            [clojure.contrib.string :as contrib-string]))
 
 (defn
 #^{:doc "If the string's length does not equal total-length then this method returns a new string with length 
@@ -21,12 +22,9 @@ then this method simply returns it."}
 (defn
 #^{:doc "Converts a keyword to it's string value. Basically, it just removes the ':' from the beginning."}
   str-keyword [incoming-keyword]
-  (if (nil? incoming-keyword)
-    nil
-    (if (keyword? incoming-keyword)
-      (. (str incoming-keyword) substring 1)
-      (str incoming-keyword))))
-    
+  (when incoming-keyword
+    (contrib-string/as-str incoming-keyword)))
+
 (defn
 #^{:doc "If string ends with the string ending, then remove ending and return the result. Otherwise, return string."}
   strip-ending [string ending]
