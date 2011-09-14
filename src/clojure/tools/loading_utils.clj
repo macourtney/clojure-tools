@@ -135,13 +135,16 @@ sequence." }
 #^{:doc "Converts an input stream to a byte array."}
   byte-array-input-stream 
   ([input-stream] (into-array Byte/TYPE (seq-input-stream input-stream)))
-  ([input-stream length] (into-array Byte/TYPE (seq-input-stream input-stream length))))
+  ([input-stream length]
+    (when-let [input-stream-seq (seq-input-stream input-stream length)]
+      (into-array Byte/TYPE input-stream-seq))))
 
 (defn
 #^{:doc "Converts an input stream to a string using the ISO-8859-1 character encoding."}
   string-input-stream 
   ([input-stream] (new String (byte-array-input-stream input-stream) "ISO-8859-1"))
-  ([input-stream length] (new String (byte-array-input-stream input-stream length) "ISO-8859-1")))
+  ([input-stream length] (string-input-stream input-stream length "ISO-8859-1"))
+  ([input-stream length encoding] (new String (byte-array-input-stream input-stream length) encoding)))
 
 (defn 
 #^{:doc "Gets the dir from the class path which ends with the given ending"}

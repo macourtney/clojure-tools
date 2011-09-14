@@ -25,7 +25,7 @@
       (= escape-str "&amp;") "&"
       (= escape-str "&gt;") ">"
       (= escape-str "&lt;") "<"
-      (= escape-str "&quote;") "\""
+      (= escape-str "&quot;") "\""
       (re-matches #"\&\#\d+;" escape-str)
         (String/valueOf (char (Integer/parseInt (second (re-matches #"\&\#(\d+);" escape-str)))))
       true (throw (RuntimeException. (str "Unknown xml escape sequence: " escape-str))))
@@ -44,7 +44,7 @@
     (= character \&) "&amp;"
     (= character \>) "&gt;"
     (= character \<) "&lt;"
-    (= character \") "&quote;"
+    (= character \") "&quot;"
     (> (int character) (int (first "\u00FF"))) (str "&#" (int character) ";")
     true character))
 
