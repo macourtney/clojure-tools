@@ -1,5 +1,5 @@
 (ns clojure.tools.loading-utils
-  (:import [java.io File FileInputStream FileNotFoundException]
+  (:import [java.io BufferedReader File FileInputStream FileNotFoundException InputStreamReader]
            [java.security AccessControlException]
            [java.util.jar JarFile])
   (:require [clojure.contrib.classpath :as classpath]
@@ -142,9 +142,11 @@ sequence." }
 (defn
 #^{:doc "Converts an input stream to a string using the ISO-8859-1 character encoding."}
   string-input-stream 
-  ([input-stream] (new String (byte-array-input-stream input-stream) "ISO-8859-1"))
+  ([input-stream] (string-input-stream input-stream -1 "ISO-8859-1"))
   ([input-stream length] (string-input-stream input-stream length "ISO-8859-1"))
-  ([input-stream length encoding] (new String (byte-array-input-stream input-stream length) encoding)))
+  ([input-stream length encoding]
+    (with-open [reader (BufferedReader. (InputStreamReader. input-stream encoding))]
+      (String. (char-array (map char (take-while #(>= % 0) (repeatedly #(. reader read)))))))))
 
 (defn 
 #^{:doc "Gets the dir from the class path which ends with the given ending"}
