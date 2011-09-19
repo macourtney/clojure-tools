@@ -40,7 +40,6 @@
 
 (deftest test-string-input-stream
   (is (= (string-input-stream (string-as-input-stream "test")) "test"))
-  (is (= (string-input-stream (string-as-input-stream "test") 3) "tes"))
   (is (= (string-input-stream (string-as-input-stream "")) "")))
 
 (deftest test-dashes-to-underscores

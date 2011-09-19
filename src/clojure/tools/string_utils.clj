@@ -1,9 +1,10 @@
 (ns clojure.tools.string-utils
   (:import [java.security NoSuchAlgorithmException MessageDigest]
            [java.math BigInteger]
-           [java.util StringTokenizer])
-  (:require [clojure.contrib.str-utils :as str-utils]
-            [clojure.contrib.string :as contrib-string]))
+           [java.util StringTokenizer]
+           [java.util.regex Matcher])
+  (:require [clojure.contrib.string :as contrib-string]
+            [clojure.string :as clj-string]))
 
 (defn
 #^{:doc "If the string's length does not equal total-length then this method returns a new string with length 
@@ -14,7 +15,7 @@ then this method simply returns it."}
         final-length (if total-length total-length 0)]
     (if (>= (. base-string length) final-length)
       base-string
-      (str (str-utils/str-join "" 
+      (str (clj-string/join "" 
         (map
           (fn [index] fill-char) 
           (range (- final-length (. base-string length))))) base-string))))
@@ -67,7 +68,7 @@ then this method simply returns it."}
 string before the spaces are added." }
   human-readable [string]
   (if string
-    (str-utils/re-gsub #"[_-]" " " (str-keyword string))
+    (clj-string/replace (str-keyword string) #"[_-]" " ")
     string))
 
 (defn md5-sum
@@ -91,15 +92,18 @@ separate the key from the value." }
   ([string separator equals-separator]
     (if (and string separator equals-separator)
       (reduce 
-        (fn [new-map pair] (assoc new-map (.trim (first pair)) (second pair)))
+        (fn [new-map pair]
+          (if (empty? (first pair))
+            new-map
+            (assoc new-map (.trim (first pair)) (second pair))))
         {}
         (map 
           #(filter 
             (fn [equals-seq] (not (re-matches equals-separator equals-seq))) 
-            (str-utils/re-partition equals-separator %))
+            (clj-string/split % equals-separator))
           (filter 
             (fn [equals-pair] (not (re-matches separator equals-pair))) 
-            (str-utils/re-partition separator string))))
+            (clj-string/split string separator))))
       nil)))
 
 (defn
@@ -118,12 +122,12 @@ separate the key from the value." }
     (float? form) (str form)
     (integer? form) (str form)
     (keyword? form) (str form)
-    (list? form) (str "(list " (str-utils/str-join " " (map form-str form)) ")")
-    (map? form) (str "{ " (str-utils/str-join ", " (map (fn [pair] (str (form-str (first pair)) " " (form-str (second pair)))) form)) " }")
-    (set? form) (str "#{" (str-utils/str-join " " (map form-str form)) "}") 
+    (list? form) (str "(list " (clj-string/join " " (map form-str form)) ")")
+    (map? form) (str "{ " (clj-string/join ", " (map (fn [pair] (str (form-str (first pair)) " " (form-str (second pair)))) form)) " }")
+    (set? form) (str "#{" (clj-string/join " " (map form-str form)) "}") 
     (string? form) (str "\"" (escape-str form) "\"")
     (symbol? form) (str "(symbol \"" form "\")")
-    (vector? form) (str "[" (str-utils/str-join " " (map form-str form)) "]")))
+    (vector? form) (str "[" (clj-string/join " " (map form-str form)) "]")))
     
 (defn
 #^{ :doc "If the given word starts with a lower case letter, then this function capitalizes the first letter. 
@@ -132,12 +136,34 @@ Otherwise, this method simply returns the given word." }
   (if (and word (> (.length word) 0) (re-matches #"^[a-z].*" word))
     (apply str (. Character toUpperCase (first word)) (rest word))
     word))
-    
+
+(defn
+#^{ :doc "Returns a lazy seq of vectors which include the match information for each matching pattern of re in string." }
+  matches
+  ([string re] (matches string re 0))
+  ([string re index]
+    (when (and re string index)
+      (let [matcher (if (instance? Matcher re) re (.matcher re string))]
+        (when (.find matcher index)
+          (lazy-seq
+            (cons [(.group matcher) (.start matcher) (.end matcher)] (matches string matcher (.end matcher)))))))))
+
+(defn
+#^{ :doc "Returns a sequence of strings by splitting the given string by the re. Unlike clojure.string.split, this
+function includes the delimiters." }
+  split-with-delimiters
+  [string re]
+  (when (and string re)
+    (let [end-indices (map #(nth % 2) (matches string re))]
+      (map #(.substring string %1 %2)
+        (cons 0 end-indices)
+        (concat end-indices [(.length string)])))))
+
 (defn
 #^{ :doc "Converts the given string to title case by capitalizing each word in the string." }
   title-case [string]
-  (if string
-    (apply str (map title-case-word (str-utils/re-partition #"\s+" string)))))
+  (when string
+    (clj-string/join (map title-case-word (split-with-delimiters string #"\s+")))))
 
 (defn
 #^{ :doc "Converts the given string human readable format then title cases the result." }
@@ -162,3 +188,27 @@ Otherwise, this method simply returns the given word." }
       (if (and (= (.substring string 0 1) "\"") (= (.substring string last-char-index) "\""))
         (.substring string 1 last-char-index)
         string))))
+
+(defn
+#^{ :doc "Null safe toLowerCase." }
+  lower-case [string]
+  (when string
+    (.toLowerCase string)))
+
+(defn
+#^{ :doc "Null safe endsWith." }
+  ends-with? [string ending]
+  (when string
+    (if ending
+      (.endsWith string ending)
+      true)))
+
+(defn
+#^{ :doc "Converts the given reader into a sequence of characters." }
+  reader-character-seq [reader]
+  (map char (take-while #(>= % 0) (repeatedly #(.read reader)))))
+
+(defn
+#^{ :doc "Reads all of the characters in the given reader and returns the result as a string." }
+  reader-string [reader]
+  (clj-string/join (reader-character-seq reader)))
