@@ -3,14 +3,15 @@
            [java.text SimpleDateFormat]
            [java.util Calendar TimeZone]
            [org.apache.commons.lang StringEscapeUtils])
-  (:require [clojure.contrib.str-utils :as str-utils]
-            [clojure.contrib.logging :as logging]
+  (:require [clojure.string :as clj-str]
             [clojure.tools.string-utils :as conjure-str-utils]))
 
 (defn
 #^{:doc "Url encodes the given string."}
   url-encode [string]
-  (. URLEncoder encode string "UTF-8"))
+  (if (string? string) 
+    (. URLEncoder encode string "UTF-8")
+    string))
 
 (defn
 #^{:doc "Url decodes the given string."}
@@ -34,8 +35,7 @@
 (defn
 #^{ :doc "Xml decodes the given string." }
   xml-decode [string]
-  (str-utils/str-join ""
-    (map xml-unescape (str-utils/re-partition #"\&\#?[a-zA-Z0-9]+;" string))))
+  (clj-str/join (map xml-unescape (conjure-str-utils/split-with-delimiters string #"\&\#?[a-zA-Z0-9]+;"))))
 
 (defn
 #^{ :doc "Xml encodes the given character." }
@@ -51,8 +51,7 @@
 (defn
 #^{ :doc "Xml encodes the given string." }
   xml-encode [string]
-  (str-utils/str-join ""
-    (map xml-encode-character string)))
+  (clj-str/join (map xml-encode-character string)))
 
 (defn
 #^{:doc "Returns a sequence of keys to use in update-params to get the lowest map to add a value into. See the doc for
@@ -105,7 +104,7 @@ Examples:
 #^{:doc "Parses the parameters in the given query-string into a parameter map."}
   parse-query-params [query-string]
   (if query-string
-    (reduce add-param {} (filter second (map #(str-utils/re-split #"=" %) (str-utils/re-split #"&" query-string))))
+    (reduce add-param {} (filter second (map #(clj-str/split % #"=") (clj-str/split query-string #"&"))))
     {}))
 
 (defn-
@@ -122,7 +121,7 @@ value is nil, then this function returns nil."}
   url-param-str [param-map]
   (if (and param-map (not-empty param-map))
     (str "?" 
-      (str-utils/str-join "&"
+      (clj-str/join "&"
         (filter identity (map str-param-pair param-map))))))
 
 (defn
@@ -140,7 +139,7 @@ value is nil, then this function returns nil."}
 (defn
 #^{ :doc "Returns a string of html attributes created from the given attributes map." }
   attribute-list-str [attributes]
-  (str-utils/str-join " " 
+  (clj-str/join " " 
     (map 
       (fn [key-value-pair] 
         (attribute-str (conjure-str-utils/str-keyword (first key-value-pair)) (second key-value-pair))) 
@@ -150,13 +149,13 @@ value is nil, then this function returns nil."}
 #^{ :doc "Returns the string value of the given date for use in an http cookie." }
   format-cookie-date [date]
   (str 
-	  (. (new SimpleDateFormat "EEE, dd-MMM-yyyy HH:mm:ss") 
-	  	format 
-	  	(let [time-zone (. TimeZone getTimeZone "GMT+0:0")
-	  	      gmt-calendar (. Calendar getInstance time-zone)]
-		  		(. gmt-calendar setTime date)
-		  		(. gmt-calendar getTime)))
-	  " GMT"))
+    (. (new SimpleDateFormat "EEE, dd-MMM-yyyy HH:mm:ss") 
+      format 
+      (let [time-zone (. TimeZone getTimeZone "GMT+0:0")
+            gmt-calendar (. Calendar getInstance time-zone)]
+        (. gmt-calendar setTime date)
+        (. gmt-calendar getTime)))
+    " GMT"))
 
 (defn
 #^{ :doc "Strips quotes from all of the values in the given map." }
@@ -185,16 +184,14 @@ the name of the attribute." }
     (filter 
       (fn [item] 
         (not (or (= item full-boundary) (.startsWith item "--")))) ;(= (.length item) 0)
-      (str-utils/re-partition 
-        (re-pattern full-boundary) 
-        string))))
+      (conjure-str-utils/split-with-delimiters string (re-pattern full-boundary)))))
 
 (declare multipart-form-part)
 
 (defn
 #^{ :doc "Parses the data in data-lines and adds the data under the key :data in content-map and returns the result." }
   parse-data [content-map data-lines]
-  (let [data (str-utils/str-join "\r\n" data-lines)
+  (let [data (clj-str/join "\r\n" data-lines)
         content-type-map (get content-map "Content-Type")]
     (assoc content-map :data 
       (if (or (contains? content-type-map "multipart/mixed") (contains? content-type-map "multipart/form-data")) 

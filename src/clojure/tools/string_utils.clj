@@ -3,8 +3,7 @@
            [java.math BigInteger]
            [java.util StringTokenizer]
            [java.util.regex Matcher])
-  (:require [clojure.contrib.string :as contrib-string]
-            [clojure.string :as clj-string]))
+  (:require [clojure.string :as clj-string]))
 
 (defn
 #^{:doc "If the string's length does not equal total-length then this method returns a new string with length 
@@ -15,7 +14,7 @@ then this method simply returns it."}
         final-length (if total-length total-length 0)]
     (if (>= (. base-string length) final-length)
       base-string
-      (str (clj-string/join "" 
+      (str (clj-string/join
         (map
           (fn [index] fill-char) 
           (range (- final-length (. base-string length))))) base-string))))
@@ -23,8 +22,10 @@ then this method simply returns it."}
 (defn
 #^{:doc "Converts a keyword to it's string value. Basically, it just removes the ':' from the beginning."}
   str-keyword [incoming-keyword]
-  (when incoming-keyword
-    (contrib-string/as-str incoming-keyword)))
+  (if (keyword? incoming-keyword)
+    (name incoming-keyword)
+    (when incoming-keyword
+      (str incoming-keyword))))
 
 (defn
 #^{:doc "If string ends with the string ending, then remove ending and return the result. Otherwise, return string."}
@@ -148,16 +149,25 @@ Otherwise, this method simply returns the given word." }
           (lazy-seq
             (cons [(.group matcher) (.start matcher) (.end matcher)] (matches string matcher (.end matcher)))))))))
 
+(defn group-splits [string group1 group2]
+  (let [delimiter-start (second group2)
+        delimiter-end (nth group2 2)
+        token-string (.substring string (nth group1 2) delimiter-start)]
+    (if (< delimiter-start delimiter-end)
+      [token-string (.substring string delimiter-start delimiter-end)]
+      [token-string])))
+
 (defn
 #^{ :doc "Returns a sequence of strings by splitting the given string by the re. Unlike clojure.string.split, this
 function includes the delimiters." }
   split-with-delimiters
-  [string re]
-  (when (and string re)
-    (let [end-indices (map #(nth % 2) (matches string re))]
-      (map #(.substring string %1 %2)
-        (cons 0 end-indices)
-        (concat end-indices [(.length string)])))))
+  ([string re] (split-with-delimiters string re true))
+  ([string re return-delimiters?]
+    (when (and string re)
+      (let [groups (matches string re)]
+        (mapcat (partial group-splits string)
+          (cons [nil 0 0] groups)
+          (concat groups [[nil (.length string) (.length string)]]))))))
 
 (defn
 #^{ :doc "Converts the given string to title case by capitalizing each word in the string." }

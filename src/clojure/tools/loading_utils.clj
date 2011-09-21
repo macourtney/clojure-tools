@@ -2,12 +2,8 @@
   (:import [java.io BufferedReader File FileInputStream FileNotFoundException InputStreamReader]
            [java.security AccessControlException]
            [java.util.jar JarFile])
-  (:require [clojure.contrib.classpath :as classpath]
-            [clojure.contrib.logging :as logging]
-            [clojure.contrib.ns-utils :as ns-utils]
-            [clojure.contrib.seq-utils :as seq-utils]
-            [clojure.contrib.str-utils :as clojure-str-utils]
-            [clojure.contrib.java-utils :as java-utils]
+  (:require [clojure.java.classpath :as classpath]
+            [clojure.string :as clojure-str-utils]
             [clojure.tools.file-utils :as file-utils]
             [clojure.tools.string-utils :as string-utils]))
 
@@ -151,36 +147,36 @@ sequence." }
 (defn 
 #^{:doc "Gets the dir from the class path which ends with the given ending"}
   get-classpath-dir-ending-with [ending]
-  (seq-utils/find-first 
-      (fn [directory]
-        (.endsWith (.getPath directory) ending))
-      (classpath/classpath-directories)))
+  (some
+    (fn [directory]
+      (when (.endsWith (.getPath directory) ending)
+        directory))
+    (classpath/classpath-directories)))
     
 (defn
 #^{:doc "Converts all dashes to underscores in string."}
   dashes-to-underscores [string]
   (if string
-    (clojure-str-utils/re-gsub #"-" "_" string)
+    (clojure-str-utils/replace string #"-" "_")
     string))
     
 (defn
 #^{:doc "Converts all underscores to dashes in string."}
   underscores-to-dashes [string]
   (if string
-    (clojure-str-utils/re-gsub #"_" "-" string)
+    (clojure-str-utils/replace string #"_" "-")
     string))
   
 (defn
 #^{:doc "Returns the file separator used on this system."}
   file-separator []
-  (java-utils/get-system-property "file.separator"))
+  (.getProperty (System/getProperties) "file.separator"))
   
 (defn
 #^{:doc "Converts all slashes to periods in string."}
   slashes-to-dots [string]
   (if string
-    (clojure-str-utils/re-gsub #"/|\\" ; "\" Fixing a bug with syntax highlighting
-       "." string) 
+    (clojure-str-utils/replace string #"/|\\" ".") 
     string))
     
 (defn
@@ -214,7 +210,7 @@ directory." }
   file-namespace [classpath-parent-directory file]
   (if file
     (string-utils/strip-ending
-      (clojure-str-utils/str-join "." 
+      (clojure-str-utils/join "." 
         (map underscores-to-dashes 
           (string-utils/tokenize 
             (if classpath-parent-directory

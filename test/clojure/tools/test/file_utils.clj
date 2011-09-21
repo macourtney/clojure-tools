@@ -2,7 +2,7 @@
   (:import [java.io File FileReader])
   (:use clojure.test
         clojure.tools.file-utils)
-  (:require [clojure.contrib.logging :as logging]))
+  (:require [clojure.tools.logging :as logging]))
 
 (def test-directory "test/clojure/tools/test")
 (def test-file (str test-directory "/test.txt"))

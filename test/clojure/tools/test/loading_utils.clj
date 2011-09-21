@@ -3,10 +3,7 @@
            [java.util.zip ZipEntry])
   (:use clojure.test
         clojure.tools.loading-utils)
-  (:require [clojure.contrib.classpath :as classpath]
-            [clojure.contrib.logging :as logging]
-            [clojure.contrib.ns-utils :as ns-utils]
-            [clojure.contrib.seq-utils :as seq-utils]
+  (:require [clojure.java.classpath :as classpath]
             [clojure.tools.file-utils :as file-utils]
             [controllers.home-controller :as home-controller]))
         
@@ -127,11 +124,9 @@
 
 (defn
   clojure-jar []
-  (seq-utils/find-first #(.endsWith (.getName %) "clojure-1.2.0.jar") (classpath/classpath-jarfiles)))
-
-(defn
-  clojure-contrib-jar []
-  (seq-utils/find-first #(.endsWith (.getName %) "clojure-contrib-1.2.0.jar") (classpath/classpath-jarfiles)))
+  (some
+    #(when (.endsWith (.getName %1) "clojure-1.2.1.jar") %1)
+    (classpath/classpath-jarfiles)))
 
 (deftest test-directory-zip-entries
   (let [clojure-entries (directory-zip-entries (clojure-jar) "clojure/xml/")]
@@ -144,6 +139,6 @@
     (is (> (count clojure-entries) 0))))
 
 (deftest test-all-class-path-jar-file-names
-  (let [clojure-contrib-entries (all-class-path-jar-file-names "clojure/contrib/generic")]
+  (let [clojure-contrib-entries (all-class-path-jar-file-names "clojure/java")]
     (is clojure-contrib-entries)
     (is (> (count clojure-contrib-entries) 0))))

@@ -1,7 +1,7 @@
 (ns clojure.tools.file-utils
   (:import [java.io File FileWriter]
            [java.security AccessControlException])
-  (:require [clojure.contrib.logging :as logging]))
+  (:require [clojure.tools.logging :as logging]))
 
 (defn
 #^{:doc "Returns the directory where Conjure is running from."}

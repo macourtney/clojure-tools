@@ -4,7 +4,9 @@
         clojure.tools.html-utils))
 
 (deftest test-url-encode
-  (is (= "foo+bar" (url-encode "foo bar"))))
+  (is (= "foo+bar" (url-encode "foo bar")))
+  (is (= 1 (url-encode 1)))
+  (is (= nil (url-encode nil))))
 
 (deftest test-url-decode
   (is (= "foo bar" (url-decode "foo+bar"))))

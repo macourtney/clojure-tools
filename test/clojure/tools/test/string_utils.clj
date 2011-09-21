@@ -15,6 +15,7 @@
 (deftest test-str-keyword
    (is (= (str-keyword :test) "test"))
    (is (= (str-keyword "test") "test"))
+   (is (= (str-keyword 1) "1"))
    (is (= (str-keyword nil) nil)))
    
 (deftest test-strip-ending
@@ -113,9 +114,9 @@
   (is (= (matches nil nil nil) nil)))
 
 (deftest test-split-with-delimiters
-  (is (= (split-with-delimiters "foo bar" #"\s+") ["foo " "bar"]))
-  (is (= (split-with-delimiters "foo 1 bar" #"\s+") ["foo " "1 " "bar"]))
-  (is (= (split-with-delimiters "foo 1\tbar" #"\s+") ["foo " "1\t" "bar"]))
+  (is (= (split-with-delimiters "foo bar" #"\s+") ["foo" " " "bar"]))
+  (is (= (split-with-delimiters "foo 1 bar" #"\s+") ["foo" " " "1" " " "bar"]))
+  (is (= (split-with-delimiters "foo 1\tbar" #"\s+") ["foo" " " "1" "\t" "bar"]))
   (is (= (split-with-delimiters "foo" #"\s+") ["foo"]))
   (is (= (split-with-delimiters "" #"\s+") [""]))
   (is (= (split-with-delimiters nil #"\s+") nil))
