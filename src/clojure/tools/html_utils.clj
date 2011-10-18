@@ -16,17 +16,19 @@
 (defn
 #^{:doc "Url decodes the given string."}
   url-decode [string]
-  (. URLDecoder decode string "UTF-8"))
+  (when string
+    (. URLDecoder decode string "UTF-8")))
 
 (defn
 #^{ :doc "Xml decodes the given escape string." }
   xml-unescape [escape-str]
-  (if (.startsWith escape-str "&")
+  (if (and escape-str (.startsWith escape-str "&"))
     (cond
       (= escape-str "&amp;") "&"
       (= escape-str "&gt;") ">"
       (= escape-str "&lt;") "<"
       (= escape-str "&quot;") "\""
+      (= escape-str "&apos;") "'"
       (re-matches #"\&\#\d+;" escape-str)
         (String/valueOf (char (Integer/parseInt (second (re-matches #"\&\#(\d+);" escape-str)))))
       true (throw (RuntimeException. (str "Unknown xml escape sequence: " escape-str))))
@@ -35,23 +37,27 @@
 (defn
 #^{ :doc "Xml decodes the given string." }
   xml-decode [string]
-  (clj-str/join (map xml-unescape (conjure-str-utils/split-with-delimiters string #"\&\#?[a-zA-Z0-9]+;"))))
+  (when string
+    (clj-str/join (map xml-unescape (conjure-str-utils/split-with-delimiters string #"\&\#?[a-zA-Z0-9]+;")))))
 
 (defn
 #^{ :doc "Xml encodes the given character." }
   xml-encode-character [character]
-  (cond
-    (= character \&) "&amp;"
-    (= character \>) "&gt;"
-    (= character \<) "&lt;"
-    (= character \") "&quot;"
-    (> (int character) (int (first "\u00FF"))) (str "&#" (int character) ";")
-    true character))
+  (when character
+    (cond
+      (= character \&) "&amp;"
+      (= character \>) "&gt;"
+      (= character \<) "&lt;"
+      (= character \") "&quot;"
+      (= character \') "&apos;"
+      (> (int character) (int (first "\u00FF"))) (str "&#" (int character) ";")
+      true character)))
 
 (defn
 #^{ :doc "Xml encodes the given string." }
   xml-encode [string]
-  (clj-str/join (map xml-encode-character string)))
+  (when string
+    (clj-str/join (map xml-encode-character string))))
 
 (defn
 #^{:doc "Returns a sequence of keys to use in update-params to get the lowest map to add a value into. See the doc for
@@ -59,10 +65,10 @@ update-params for more information on how the key-seq is used."}
   key-seq [full-key-str]
   (let [stripped-key (. full-key-str trim)]
     (if (> (. stripped-key length) 0)
-      (if (re-matches #"^([\w-]+)(\[[\w-]+\])*$" stripped-key)
+      (if (re-matches #"^([\w-]+)(\[[^\[\]]+\])*$" stripped-key)
         (cons 
           (keyword (re-find #"^[\w-]+" stripped-key))
-          (let [matcher (re-matcher #"\[[\w-]+\]" stripped-key)]
+          (let [matcher (re-matcher #"\[[^\[\]]+\]" stripped-key)]
             (for [current-key (repeatedly #(re-find matcher)) :while current-key] 
               (keyword (. current-key substring 1 (- (. current-key length) 1))))))
         (throw (new RuntimeException (str "Key string is not valid: \"" full-key-str "\". Key string must be in the form <name>[<name>]*"))))

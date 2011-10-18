@@ -9,7 +9,63 @@
   (is (= nil (url-encode nil))))
 
 (deftest test-url-decode
-  (is (= "foo bar" (url-decode "foo+bar"))))
+  (is (= "foo bar" (url-decode "foo+bar")))
+  (is (nil? (url-decode nil))))
+
+(deftest test-xml-unescape
+  (is (= "&" (xml-unescape "&amp;")))
+  (is (= ">" (xml-unescape "&gt;")))
+  (is (= "<" (xml-unescape "&lt;")))
+  (is (= "\"" (xml-unescape "&quot;")))
+  (is (= "'" (xml-unescape "&apos;")))
+  (is (= "!" (xml-unescape "&#33;")))
+  (is (nil? (xml-unescape nil))))
+
+(deftest test-xml-decode
+  (is (= "blah&blah" (xml-decode "blah&amp;blah")))
+  (is (= "blah!" (xml-decode "blah&#33;")))
+  (is (= "" (xml-decode "")))
+  (is (nil? (xml-decode nil))))
+
+(deftest test-xml-encode-character
+  (is (= "&amp;" (xml-encode-character \&)))
+  (is (= "&gt;" (xml-encode-character \>)))
+  (is (= "&lt;" (xml-encode-character \<)))
+  (is (= "&quot;" (xml-encode-character \")))
+  (is (= "&apos;" (xml-encode-character \')))
+  (is (= "&apos;" (xml-encode-character \')))
+  (is (nil? (xml-encode-character nil))))
+
+(deftest test-xml-encode
+  (is (= "blah&amp;blah" (xml-encode "blah&blah")))
+  (is (= "&gt;" (xml-encode ">")))
+  (is (= "" (xml-encode "")))
+  (is (nil? (xml-encode nil))))
+
+(deftest test-key-seq
+  (is (= [] (key-seq "")))
+  (is (= [ :foo ] (key-seq "foo")))
+  (is (= [ :foo :bar ] (key-seq "foo[bar]")))
+  (is (= [ :foo :bar :baz] (key-seq "foo[bar][baz]")))
+  (is (= [ :foo (keyword "bar baz")] (key-seq "foo[bar baz]")))
+  (try
+    (key-seq "foo[]]")
+    (is false "Invalid key \"]\" should not have been read.")
+    (catch RuntimeException e
+      (comment "Test passed."))))
+
+(deftest test-update-params
+  (is (= {} (update-params {} [] nil)))
+  (is (= { :baz "biz" } (update-params {} [:baz] "biz")))
+  (is (= { :baz { :boz "biz" } } (update-params {} [:baz :boz] "biz")))
+  (is (= { :baz { :boz { :buz "biz" } } } (update-params {} [:baz :boz :buz] "biz")))
+  (let [params { :foo "bar", :test { :id 0 } }]
+    (is (= params (update-params params [] nil)))
+    (is (= (merge params { :baz "biz" }) (update-params params [:baz] "biz")))
+    (is (= (merge params { :baz { :boz "biz" } }) (update-params params [:baz :boz] "biz")))
+    (is (= (merge params { :baz { :boz { :buz "biz" } } }) (update-params params [:baz :boz :buz] "biz")))
+    (is (= (merge params { :test { :id 0, :function "test-fn" } }) (update-params params [:test :function] "test-fn")))
+    (is (= (merge params { :test { :id 0, :function { :id 1 } } }) (update-params params [:test :function :id] 1)))))
 
 (deftest test-add-param
   (is (= { :foo "bar" } (add-param {} ["foo" "bar"])))
@@ -24,25 +80,6 @@
   (is (= { :foo { :bar "boz", :buz "bez" }, :baz "biz" } (parse-query-params "foo[bar]=boz&baz=biz&foo[buz]=bez")))
   (is (= {} (parse-query-params "")))
   (is (= {} (parse-query-params nil))))
-
-(deftest test-key-seq
-  (is (= [] (key-seq "")))
-  (is (= [ :foo ] (key-seq "foo")))
-  (is (= [ :foo :bar ] (key-seq "foo[bar]")))
-  (is (= [ :foo :bar :baz] (key-seq "foo[bar][baz]"))))
-
-(deftest test-update-params
-  (is (= {} (update-params {} [] nil)))
-  (is (= { :baz "biz" } (update-params {} [:baz] "biz")))
-  (is (= { :baz { :boz "biz" } } (update-params {} [:baz :boz] "biz")))
-  (is (= { :baz { :boz { :buz "biz" } } } (update-params {} [:baz :boz :buz] "biz")))
-  (let [params { :foo "bar", :test { :id 0 } }]
-    (is (= params (update-params params [] nil)))
-    (is (= (merge params { :baz "biz" }) (update-params params [:baz] "biz")))
-    (is (= (merge params { :baz { :boz "biz" } }) (update-params params [:baz :boz] "biz")))
-    (is (= (merge params { :baz { :boz { :buz "biz" } } }) (update-params params [:baz :boz :buz] "biz")))
-    (is (= (merge params { :test { :id 0, :function "test-fn" } }) (update-params params [:test :function] "test-fn")))
-    (is (= (merge params { :test { :id 0, :function { :id 1 } } }) (update-params params [:test :function :id] 1)))))
 
 (deftest test-url-param-str
   (is (= "?foo=bar" (url-param-str { :foo "bar" })))

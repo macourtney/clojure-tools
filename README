@@ -1,17 +1,23 @@
-# clojure-util
+# clojure-tools
 
-FIXME: write description
+Clojure tools is a set of utilities pulled out of Conjure. Clojure tools should not be confused with the newer
+clojure.tools libraries which was created from clojure.contrib.
 
 ## Usage
 
-FIXME: write
+To use the utilities in this package, simply include their namespaces.
 
 ## Installation
 
-FIXME: write
+To include clojure tools in your project add the following to your project.clj file:
+
+[clojure-tools "X.X.X"]
+
+Where, X.X.X is the latest version of clojure-tools. You can find the latest released version of clojure-tools at:
+http://clojars.org/clojure-tools
 
 ## License
 
-Copyright (C) 2010 FIXME
+Copyright (C) 2010 Matthew Courtney
 
-Distributed under the Eclipse Public License, the same as Clojure.
+Distributed under the Apache License, Version 2.0.
