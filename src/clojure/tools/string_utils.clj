@@ -18,7 +18,7 @@ then this method simply returns it."}
         (map
           (fn [index] fill-char) 
           (range (- final-length (. base-string length))))) base-string))))
-        
+
 (defn
 #^{:doc "Converts a keyword to it's string value. Basically, it just removes the ':' from the beginning."}
   str-keyword [incoming-keyword]
