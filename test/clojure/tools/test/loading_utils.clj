@@ -136,9 +136,15 @@
 (deftest test-class-path-zip-entries
   (let [clojure-entries (class-path-zip-entries "clojure/xml/")]
     (is clojure-entries)
+    (is (> (count clojure-entries) 0)))
+  (let [clojure-entries (class-path-zip-entries "/clojure/xml/")]
+    (is clojure-entries)
     (is (> (count clojure-entries) 0))))
 
 (deftest test-all-class-path-jar-file-names
   (let [clojure-contrib-entries (all-class-path-jar-file-names "clojure/java")]
+    (is clojure-contrib-entries)
+    (is (> (count clojure-contrib-entries) 0)))
+  (let [clojure-contrib-entries (all-class-path-jar-file-names "/clojure/java")]
     (is clojure-contrib-entries)
     (is (> (count clojure-contrib-entries) 0))))

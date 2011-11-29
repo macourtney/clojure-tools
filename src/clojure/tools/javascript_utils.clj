@@ -1,5 +1,5 @@
 (ns clojure.tools.javascript-utils
-  (require [clojure.contrib.str-utils :as str-utils]))
+  (:require [clojure.contrib.str-utils :as str-utils]))
 
 (defn
 #^{ :doc "Generates a java script function string with the given parameters and body." }

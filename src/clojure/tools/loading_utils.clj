@@ -5,6 +5,7 @@
   (:require [clojure.java.classpath :as classpath]
             [clojure.string :as clojure-str-utils]
             [clojure.tools.file-utils :as file-utils]
+            [clojure.tools.logging :as logging]
             [clojure.tools.string-utils :as string-utils]))
 
 (defn
@@ -273,10 +274,16 @@ cannot be found.." }
     (filter #(entry-in-directory? % dir-name)
       (enumeration-seq (.entries jar-file)))))
 
+(defn strip-leading-slash [dir-name]
+  (if (= (first dir-name) \/)
+    (.substring dir-name 1 (.length dir-name))
+    dir-name))
+
 (defn
 #^{ :doc "Returns all of the zip entries in the classpath with the given directory name." }
   class-path-zip-entries [dir-name]
-  (mapcat #(directory-zip-entries % dir-name) (classpath-jar-files)))
+  (when dir-name
+    (mapcat #(directory-zip-entries % (strip-leading-slash dir-name)) (classpath-jar-files))))
 
 (defn
 #^{ :doc "Returns all of the files in the sub directory of the given parent directory, if the full parent and sub 
@@ -305,7 +312,8 @@ directory exists. Otherwise, this function returns nil." }
 (defn
 #^{ :doc "Returns all of the file names in the given directory in all of the class path jars." }
   all-class-path-jar-file-names [dir-name]
-  (reduce #(conj %1 (zip-entry-child-dir %2 dir-name)) #{} (class-path-zip-entries dir-name)))
+  (let [jar-dir-name (strip-leading-slash dir-name)]
+    (reduce #(conj %1 (zip-entry-child-dir %2 jar-dir-name)) #{} (class-path-zip-entries jar-dir-name))))
 
 (defn
 #^{ :doc "Returns all of the file names in the given directory on the class path." }
