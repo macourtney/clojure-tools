@@ -1,5 +1,5 @@
 (ns clojure.tools.map-utils
-  (:require [clojure.contrib.logging :as logging]))
+  (:require [clojure.tools.logging :as logging]))
 
 (defn
 #^{ :doc "Works like assoc, but only associates if condition is true." }

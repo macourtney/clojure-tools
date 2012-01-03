@@ -1,7 +1,7 @@
 (ns clojure.tools.logging-utils
   (:import [java.util Properties]
-          [java.io ByteArrayOutputStream ByteArrayInputStream]
-          [java.util.logging LogManager]))
+           [java.io ByteArrayOutputStream ByteArrayInputStream]
+           [java.util.logging LogManager]))
 
 (defn
 #^{ :doc "Initializes the logger using the given configuration map." }
