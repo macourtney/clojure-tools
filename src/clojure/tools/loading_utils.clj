@@ -244,10 +244,9 @@ directory." }
 #^{ :doc "Returns the value of the given var symbol in the given namespace or default if the var or the namespace
 cannot be found.." }
   resolve-ns-var [ns-sym var-sym default]
-  (let [ns-found (find-ns 'ns-sym)]
-    (if ns-found
-      (or (ns-resolve ns-found var-sym) default)
-      default)))
+  (if-let [ns-found (find-ns 'ns-sym)]
+    (or (ns-resolve ns-found var-sym) default)
+    default))
 
 (defn
 #^{ :doc "Reloads all of the given namespaces." }
