@@ -84,7 +84,7 @@
 (deftest test-url-param-str
   (is (= "?foo=bar" (url-param-str { :foo "bar" })))
   (is (= "?foo=bar&baz=biz" (url-param-str { :foo "bar", :baz :biz })))
-  (is (= "?foo=bar&baz=biz&boz=buz" (url-param-str { :foo "bar", :baz :biz, "boz" "buz" })))
+  (is (= "?foo=bar&boz=buz&baz=biz" (url-param-str { :foo "bar", :baz :biz, "boz" "buz" })))
   (is (= "?foo=bar" (url-param-str { :foo "bar", :baz nil })))
   (is (nil? (url-param-str {})))
   (is (nil? (url-param-str nil))))
@@ -99,8 +99,8 @@
 
 (deftest test-attribute-list-str
   (is (= "foo=\"bar\"" (attribute-list-str { :foo "bar" })))
-  (is (= "baz=\"biz\" foo=\"bar\"" (attribute-list-str { :baz "biz", :foo "bar" })))
-  (is (= "baz=\"biz\" boz=\"buz\" foo=\"bar\"" (attribute-list-str { :baz "biz", :boz "buz", :foo "bar" })))
+  (is (= "foo=\"bar\" baz=\"biz\"" (attribute-list-str { :baz "biz", :foo "bar" })))
+  (is (= "foo=\"bar\" boz=\"buz\" baz=\"biz\"" (attribute-list-str { :baz "biz", :boz "buz", :foo "bar" })))
   (is (= "" (attribute-list-str { })))
   (is (= "" (attribute-list-str nil))))
 

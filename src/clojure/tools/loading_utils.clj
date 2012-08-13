@@ -253,7 +253,7 @@ cannot be found.." }
   namespace-exists? [namespace]
   (if (symbol? namespace)
     (try
-      (require (symbol namespace))
+      (require namespace)
       true
       (catch FileNotFoundException fileNotFound
         false))

@@ -125,7 +125,7 @@
 (defn
   clojure-jar []
   (some
-    #(when (.endsWith (.getName %1) "clojure-1.2.1.jar") %1)
+    #(when (.endsWith (.getName %1) "clojure-1.4.0.jar") %1)
     (classpath/classpath-jarfiles)))
 
 (deftest test-directory-zip-entries
