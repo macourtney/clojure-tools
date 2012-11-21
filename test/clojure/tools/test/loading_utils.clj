@@ -129,7 +129,9 @@
     (classpath/classpath-jarfiles)))
 
 (deftest test-directory-zip-entries
-  (let [clojure-entries (directory-zip-entries (clojure-jar) "clojure/xml/")]
+  (let [clojure-jar-file (clojure-jar)
+        clojure-entries (directory-zip-entries clojure-jar-file "clojure/xml/")]
+    (is clojure-jar-file)
     (is clojure-entries)
     (is (> (count clojure-entries) 0))))
 
