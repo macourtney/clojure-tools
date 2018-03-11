@@ -6,7 +6,8 @@
             [clojure.string :as clojure-str-utils]
             [clojure.tools.file-utils :as file-utils]
             [clojure.tools.logging :as logging]
-            [clojure.tools.string-utils :as string-utils]))
+            [clojure.tools.string-utils :as string-utils]
+            [ring.util.codec :refer [url-decode]]))
 
 (defn
 #^{ :doc "Gets the system class loader" }
@@ -23,10 +24,11 @@
 
 (defn
   classpath-directories []
-  (filter file-utils/is-directory?
-    (if-let [classpath (user-classpath-var?)]
-      (map #(File. %) (.split (var-get classpath) (path-separator)))
-      (classpath/classpath))))
+  (filter
+   file-utils/is-directory?
+   (if-let [classpath (user-classpath-var?)]
+     (map #(File. (url-decode %)) (.split (var-get classpath) (path-separator)))
+     (classpath/classpath))))
 
 (defn
   #^{ :doc "Returns true if the given file is a jar fiel. False otherwise, even if the is file check causes an
