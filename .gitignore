@@ -7,3 +7,4 @@ classes
 .lein-failures
 .pmd
 target/
+.lein-env
