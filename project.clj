@@ -3,4 +3,5 @@
   :dependencies [[commons-lang/commons-lang "2.5"]
                  [org.clojure/clojure "1.4.0"]
                  [org.clojure/java.classpath "0.2.1"]
-                 [org.clojure/tools.logging "0.2.3"]])
+                 [org.clojure/tools.logging "0.2.3"]
+                 [ring/ring-codec "1.1.0"]])
